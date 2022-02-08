@@ -1,5 +1,11 @@
 const express = require('express');
+const config = require('config');
+const debug = require('debug')('app:inicio');
+//const dbDebug = require('debug')('app:db');
+//const logger = require('./logger');
+const morgan = require('morgan');
 const joi = require('joi');
+
 const app = express();
 
 // app.get() //Peticion de datos al servidor
@@ -8,6 +14,28 @@ const app = express();
 // app.delete(); //Eliminacion de datos al servidor
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static('public'));
+
+//app.use(logger);
+// app.use((req, res, next) => {
+//     console.log('Autenticacion.....');
+//     next();
+// })
+
+//Configuracion de entornos
+console.log('Aplicacion: ' + config.get('nombre'));
+console.log('BD server: ' + config.get('configDB.host'));
+
+//Uso de middleware de tercero - MORGAN
+if (app.get('env') === 'development') {
+    app.use(morgan('tiny'));
+    //console.log('Morgan Habilitado');
+    debug('Morgan Esta Habilitado.');
+}
+
+// Trabajos DB
+debug('Conectando con la base de datos.');
 
 const usuarios = [
     { id: 1, nombre: 'Federico' },
